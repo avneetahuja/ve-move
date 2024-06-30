@@ -30,11 +30,11 @@ export const ConnectWalletButton = () => {
         rounded={"full"}
         color="black"
         size="md"
-        bg="rgba(235, 236, 252, 1)"
+        bg="E59400"
       >
         <HStack spacing={2}>
           <AddressIcon address={account} boxSize={4} rounded={"full"} />
-          <Text fontWeight={"400"}>{humanAddress(account, 4, 6)}</Text>
+          <Text fontWeight={"400"} color={"#FFF"}>{humanAddress(account, 4, 6)}</Text>
         </HStack>
       </Button>
     </Fade>

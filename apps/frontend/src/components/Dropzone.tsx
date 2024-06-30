@@ -86,20 +86,20 @@ export const Dropzone = () => {
   );
 
   return (
-    <VStack w={"full"} mt={3}>
+    <VStack w={"full"} mt={3} bg={"#000"}>
       <Box
         {...getRootProps()}
         p={5}
         border="2px"
-        borderColor={isDragActive ? "green.300" : "gray.300"}
+        borderColor={isDragActive ? "orange.300" : "gray.300"}
         borderStyle="dashed"
         borderRadius="md"
-        bg={isDragActive ? "green.100" : "gray.50"}
+        bg={isDragActive ? "orange.100" : "gray.50"}
         textAlign="center"
         cursor="pointer"
         _hover={{
-          borderColor: "green.500",
-          bg: "green.50",
+          borderColor: "orange.500",
+          bg: "orange.50",
         }}
         w={"full"}
         h={"200px"}

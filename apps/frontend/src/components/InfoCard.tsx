@@ -9,11 +9,10 @@ import {
   Flex,
   Link,
 } from "@chakra-ui/react";
-import { MdOutlineArrowOutward } from "react-icons/md";
 
 export const InfoCard = () => {
   return (
-    <Card w={"full"}>
+    <Card w={"full"} bg={"#000"}>
       <Box p={3}>
         <VStack w={"full"} spacing={{ base: 2, md: 4 }}>
           <Image src="/ecology-bag-with-leaves.png" borderRadius={16} />
@@ -23,28 +22,16 @@ export const InfoCard = () => {
             direction={{ base: "column", md: "row" }}
             alignItems={"center"}
           >
-            <HStack alignSelf={{ base: "center", md: "flex-start" }}>
+            {/* <HStack alignSelf={{ base: "center", md: "flex-start" }}>
               <Image src="/logo.png" h={16} borderRadius={16} />
-              <Text fontSize={24} fontWeight={800}>
-                EcoEarn
+              <Text fontSize={24} fontWeight={800} color={"#FFF"}>
+                VeMove
               </Text>
-            </HStack>
+            </HStack> */}
             <Flex
               mt={{ base: 4, md: 0 }}
               direction={{ base: "column", md: "row" }}
             >
-              <Link isExternal href="https://github.com/vechain/x-app-template">
-                <Button
-                  rounded={"full"}
-                  colorScheme="primary"
-                  size={"md"}
-                  leftIcon={<MdOutlineArrowOutward />}
-                  mt={{ base: 2, md: 0 }}
-                  ml={{ base: 0, md: 2 }}
-                >
-                  Github repository
-                </Button>
-              </Link>
             </Flex>
           </Flex>
         </VStack>

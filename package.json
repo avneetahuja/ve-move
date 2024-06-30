@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "eslint": "^8.57.0",
+    "hardhat": "^2.22.5",
     "prettier": "^3.2.5",
     "turbo": "latest"
   },
@@ -19,5 +20,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@emotion/react": "^11.11.4"
+  }
 }
