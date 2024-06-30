@@ -7,9 +7,6 @@ import { StartForm } from "./components/StartForm";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useEffect } from "react";
-import { useWallet } from "@vechain/dapp-kit-react";
-import { Status } from "./components/Status";
-
 function App() {
   const transactions = useQuery(api.transactions.get);
 

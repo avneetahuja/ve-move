@@ -31,7 +31,7 @@ export function Status() {
   };
 
   return (
-    <Box w="350px" borderWidth="1px" borderRadius="lg" overflow="hidden">
+    <Box w="350px" borderWidth="1px" borderRadius="lg" overflow="hidden" textColor={"#FFF"}>
       <Box p="6">
         <Heading size="md">Status</Heading>
         <Text mt="1">You're so close to earn yourself some VeChain!</Text>
@@ -51,7 +51,7 @@ export function Status() {
         </VStack>
       </Box>
       <Box p="6">
-        <Button w="full">End</Button>
+        <Button w="full" colorScheme={"primary"}>End</Button>
       </Box>
     </Box>
   );
