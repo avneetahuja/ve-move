@@ -15,7 +15,7 @@ contract MoveEarn {
 
     function rewardUser(address user, uint256 rewardAmt) public {
         require(msg.sender == ownerName, "Only owner can reward users");
-        require(token.transfer(user, rewardAmt));
+        token.transfer(user, rewardAmt);
         emit RewardPaid(user, rewardAmt);
     }
 
