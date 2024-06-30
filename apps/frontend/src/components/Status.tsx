@@ -12,12 +12,19 @@ import { useWallet } from "@vechain/dapp-kit-react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 
-export function Status({ walletAddress, setRideEnd }: { walletAddress: string; setRideEnd: (value: boolean) => void }) {
+export function Status({
+  walletAddress,
+  setRideEnd,
+}: {
+  walletAddress: string;
+  setRideEnd: (value: boolean) => void;
+}) {
   const [error, setError] = useState(false);
   const [errorMessages, setErrorMessages] = useState("Error starting journey");
   const [seconds, setSeconds] = useState(0);
-  //   const account = useWallet();
-    const deleteWallet = useMutation(api.transactions.deleteWalletByAddress);
+  const [loading, setLoading] = useState(false);
+
+  const deleteWallet = useMutation(api.transactions.deleteWalletByAddress);
   const coordinates = useQuery(
     api.transactions.getCoordinatesFromWalletAddress,
     {
@@ -32,7 +39,7 @@ export function Status({ walletAddress, setRideEnd }: { walletAddress: string; s
     return () => clearInterval(interval);
   }, []);
 
-  const formatTime = (time: number) => {
+  const formatTime = (time) => {
     const hours = Math.floor(time / 3600);
     const minutes = Math.floor((time % 3600) / 60);
     const seconds = time % 60;
@@ -44,48 +51,55 @@ export function Status({ walletAddress, setRideEnd }: { walletAddress: string; s
   };
 
   function handleEnd() {
+    setLoading(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-            console.log("Start Time: ", coordinates![2]);
+          console.log("Start Time: ", coordinates![2]);
           const data = {
-            userAddress: walletAddress, // replace with actual wallet address
+            userAddress: walletAddress,
             sLatitude: coordinates![0],
             sLongitude: coordinates![1],
             eLatitude: position.coords.latitude.toString(),
             eLongitude: position.coords.longitude.toString(),
             sTime: coordinates![2],
             eTime: Date.now().toString(),
-            modeOfTransport: 'ride', // replace with actual type
-            rewardQty: '1' // replace with actual reward
+            modeOfTransport: "ride",
+            rewardQty: "1",
           };
-          const apiUrl = 'http://localhost:3001';
+          const apiUrl = "http://localhost:3001";
           fetch(`${apiUrl}/transaction`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
           })
-          .then(response => response.json())
-          .then(data => console.log(data))
-          .catch((error) => {
-            console.error('Error:', error);
-          });
-            setRideEnd(false);
-            deleteWallet({
-              walletAddress: walletAddress,
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+              setLoading(false);
+              setRideEnd(false);
+              deleteWallet({
+                walletAddress: walletAddress,
+              });
+            })
+            .catch((error) => {
+              setLoading(false);
+              setError(true);
+              setErrorMessages("Error posting transaction");
+              console.error("Error:", error);
             });
-            
         },
         (error) => {
+          setLoading(false);
           setError(true);
           setErrorMessages("Error obtaining geolocation");
           console.error("Error obtaining geolocation", error);
         }
-        
       );
     } else {
+      setLoading(false);
       setError(true);
       setErrorMessages("Geolocation is not supported by this browser.");
       console.error("Geolocation is not supported by this browser.");
@@ -100,12 +114,12 @@ export function Status({ walletAddress, setRideEnd }: { walletAddress: string; s
       overflow="hidden"
       textColor={"#FFF"}
     >
-      <Box p="6">
+      <Box px="6" pb="2" pt="2">
         <Heading size="md">Status</Heading>
         <Text mt="1">You're so close to earn yourself some VeChain!</Text>
       </Box>
       <Box p="6">
-        <VStack spacing="24px">
+        <VStack spacing="16px">
           <FormControl id="ride-status">
             <FormLabel>Ride Status:</FormLabel>
             <Text fontSize="2xl" borderBottom="4px" borderColor="orange.600">
@@ -119,7 +133,13 @@ export function Status({ walletAddress, setRideEnd }: { walletAddress: string; s
         </VStack>
       </Box>
       <Box p="6">
-        <Button w="full" colorScheme={"primary"} onClick={handleEnd}>
+        <Button
+          w="full"
+          colorScheme={"primary"}
+          onClick={handleEnd}
+          isLoading={loading}
+          loadingText="Ending"
+        >
           End
         </Button>
         {error && (

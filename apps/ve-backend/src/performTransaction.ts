@@ -127,7 +127,6 @@ async function fetchTravelDuration(
 ): Promise<number | null> {
   try {
     const apiKey = process.env.GOOGLE_MAPS_API_KEY || "";
-    console.log("Google Maps API key:", apiKey);
     const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${sLatitude},${sLongitude}&destination=${eLatitude},${eLongitude}&mode=${modeOfTransport}&departure_time=now&key=${apiKey}`;
 
     const response = await axios.get(url);
@@ -171,10 +170,11 @@ export async function DAO_VERIFY(
       sTimeUnix,
       eTimeUnix
     );
-    if (estimatedTimeInSeconds < 120) {
-      return false;
-    }
+    
     console.log("Estimated time:", estimatedTimeInSeconds);
+    if (estimatedTimeInSeconds < 120.0) {
+        return false;
+      }
     // Step 2: Fetch travel duration from Google Maps API
 
     const travelDuration = await fetchTravelDuration(
