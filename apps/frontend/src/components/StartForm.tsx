@@ -1,4 +1,12 @@
-import { Box, Button, Text, Select, VStack, HStack, useEventListenerMap } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Text,
+  Select,
+  VStack,
+  HStack,
+  useEventListenerMap,
+} from "@chakra-ui/react";
 import { useWallet } from "@vechain/dapp-kit-react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
@@ -6,14 +14,16 @@ import { useEffect, useState } from "react";
 import { Status } from "./Status";
 
 export function StartForm() {
-  
   // const transactions = useQuery(api.transactions.get);
   const createTransaction = useMutation(api.transactions.updateTransaction);
   const [rideType, setRideType] = useState("transit");
   const [error, setError] = useState(false);
   const [errorMessages, setErrorMessages] = useState("Error starting journey");
   const account = useWallet();
-  let ridingStatus = useQuery(api.transactions.getRidingFromWalletAddress, { walletAddress: account.account ?? "" })?? false;
+  let ridingStatus =
+    useQuery(api.transactions.getRidingFromWalletAddress, {
+      walletAddress: account.account ?? "",
+    }) ?? false;
   function enterTransaction() {
     if (!account.account) {
       setError(true);
@@ -23,7 +33,7 @@ export function StartForm() {
     if (ridingStatus === true) {
       setError(true);
       setErrorMessages("You are already riding");
-      return
+      return;
     }
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -51,18 +61,15 @@ export function StartForm() {
   }
 
   useEffect(() => {
-    if(!account.account) {
-      ridingStatus=false;
+    if (!account.account) {
+      ridingStatus = false;
     }
-  }
-  , [account.account]);
+  }, [account.account]);
 
-  if (ridingStatus === true){
-    return <Status />;
-  }
-  else{
+  if (ridingStatus === true) {
+    return <Status walletAddress={account.account ?? ""} />;
+  } else {
     return (
-    
       <Box
         w="350px"
         borderWidth="1px"
@@ -102,7 +109,6 @@ export function StartForm() {
           <Box id="qr-scanner" display="none" w="100%"></Box>
         </VStack>
         <Box p={5} borderTopWidth="1px">
-          
           <Button w="full" colorScheme="primary" onClick={enterTransaction}>
             Start
           </Button>
@@ -113,9 +119,6 @@ export function StartForm() {
           </Text>
         )}
       </Box>
-    
-    
-  );
+    );
   }
-  
 }

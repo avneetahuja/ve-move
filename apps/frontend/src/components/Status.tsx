@@ -8,9 +8,22 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { useWallet } from "@vechain/dapp-kit-react";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
 
-export function Status() {
+export function Status({ walletAddress }: { walletAddress: string }) {
+  const [error, setError] = useState(false);
+  const [errorMessages, setErrorMessages] = useState("Error starting journey");
   const [seconds, setSeconds] = useState(0);
+  //   const account = useWallet();
+
+  const coordinates = useQuery(
+    api.transactions.getCoordinatesFromWalletAddress,
+    {
+      walletAddress: walletAddress ?? "",
+    }
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -30,8 +43,38 @@ export function Status() {
       .join(":");
   };
 
+  function handleEnd() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log(
+            "current position",
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          console.log("start position", coordinates![0], coordinates![1]);
+        },
+        (error) => {
+          setError(true);
+          setErrorMessages("Error obtaining geolocation");
+          console.error("Error obtaining geolocation", error);
+        }
+      );
+    } else {
+      setError(true);
+      setErrorMessages("Geolocation is not supported by this browser.");
+      console.error("Geolocation is not supported by this browser.");
+    }
+  }
+
   return (
-    <Box w="350px" borderWidth="1px" borderRadius="lg" overflow="hidden" textColor={"#FFF"}>
+    <Box
+      w="350px"
+      borderWidth="1px"
+      borderRadius="lg"
+      overflow="hidden"
+      textColor={"#FFF"}
+    >
       <Box p="6">
         <Heading size="md">Status</Heading>
         <Text mt="1">You're so close to earn yourself some VeChain!</Text>
@@ -51,7 +94,14 @@ export function Status() {
         </VStack>
       </Box>
       <Box p="6">
-        <Button w="full" colorScheme={"primary"}>End</Button>
+        <Button w="full" colorScheme={"primary"} onClick={handleEnd}>
+          End
+        </Button>
+        {error && (
+          <Text p={5} color="red.500">
+            {errorMessages}
+          </Text>
+        )}
       </Box>
     </Box>
   );
