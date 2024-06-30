@@ -2,11 +2,31 @@ import { DAppKitProvider } from "@vechain/dapp-kit-react";
 import { ChakraProvider, Container, Flex } from "@chakra-ui/react";
 import { InfoCard, Navbar, SubmissionModal } from "./components";
 import { theme } from "./theme";
-import { Button } from "@chakra-ui/react";
 import { Box } from "@chakra-ui/react";
 import { StartForm } from "./components/StartForm";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { useEffect } from "react";
+import { useWallet } from "@vechain/dapp-kit-react";
+import { Status } from "./components/Status";
 
 function App() {
+  const transactions = useQuery(api.transactions.get);
+
+  useEffect(() => {
+    console.log(transactions);
+  }, [transactions]);
+  // const account = useWallet();
+  // let ridingStatus = useQuery(api.transactions.getRidingFromWalletAddress, {
+  //   walletAddress: account.account ?? "",
+  // });
+
+  // useEffect(() => {
+  //   if (useWallet().account === null) {
+  //     ridingStatus = false;
+  //   }
+  // });
+
   return (
     <>
       <Box bg="#000">
@@ -34,7 +54,6 @@ function App() {
                 <InfoCard />
                 <StartForm />
               </Container>
-              
             </Flex>
 
             {/* MODALS  */}
