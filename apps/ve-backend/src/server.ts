@@ -21,16 +21,11 @@ interface TransactionResult {
 
 //
 app.post('/transaction', async (req, res) => {
-    const { userAddress , rewardQty } = req.body;
-    console.log("User Address: ", userAddress);
-    console.log("Reward Quantity: ", rewardQty);
-  
+    const {sLatitude, sLongitude, eLatitude, eLongitude, sTime, eTime, modeOfTransport, userAddress , rewardQty} = req.body;
+
     try {
-      
+
       const result: TransactionResult = await performTransaction(userAddress, rewardQty);
-      console.log("Line before error")
-      console.log(result)
-      console.log("Line after error")
       if (result.success) {
         res.status(200).send({ message: 'Transaction successful', result });
       } else {
@@ -44,6 +39,8 @@ app.post('/transaction', async (req, res) => {
       }
     }
   });
+
+
 
 
 app.listen(port, () => {

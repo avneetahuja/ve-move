@@ -1,6 +1,7 @@
 import { TransactionHandler, clauseBuilder, unitsUtils } from "@vechain/sdk-core";
 import { ProviderInternalBaseWallet, ThorClient, VeChainProvider, signerUtils } from "@vechain/sdk-network";
 import dotenv from 'dotenv';
+import axios from 'axios';
 
 dotenv.config();
 dotenv.config({ path: ".env.local", override: true });
@@ -92,3 +93,52 @@ export async function performTransaction(userAddress: string, rewardQty: string)
         return { success: false, error: (error instanceof Error) ? error.message : 'Unknown error' };
     }
 }
+
+
+// Function to calculate the time difference in seconds between two UNIX timestamps
+function calculateTimeDifferenceInSeconds(startTimeUnix: number, endTimeUnix: number): number {
+    return Math.abs(endTimeUnix - startTimeUnix);
+}
+
+// Function to fetch travel duration from Google Maps Directions API
+async function fetchTravelDuration(sLatitude: string, sLongitude: string, eLatitude: string, eLongitude: string, modeOfTransport: string): Promise<number | null> {
+    try {
+        const apiKey = process.env.GOOGLE_MAPS_API_KEY || '';
+        const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${sLatitude},${sLongitude}&destination=${eLatitude},${eLongitude}&mode=${modeOfTransport}&departure_time=now&key=${apiKey}`;
+        
+        const response = await axios.get(url);
+        const durationInSeconds = response.data.routes[0].legs[0].duration.value; // Duration in seconds
+        return durationInSeconds;
+    } catch (error) {
+        console.error('Error fetching travel duration from Google Maps API:', error);
+        return null;
+    }
+}
+
+// DAO_VERIFY function implementation
+export async function DAO_VERIFY(sLatitude: string, sLongitude: string, eLatitude: string, eLongitude: string, sTimeUnix: number, eTimeUnix: number, modeOfTransport: string): Promise<boolean> {
+    try {
+        // Step 1: Calculate time duration between sTime and eTime
+        const estimatedTimeInSeconds = calculateTimeDifferenceInSeconds(sTimeUnix, eTimeUnix);
+        
+        // Step 2: Fetch travel duration from Google Maps API
+        const travelDuration = await fetchTravelDuration(sLatitude, sLongitude, eLatitude, eLongitude, modeOfTransport);
+        if (travelDuration === null) {
+            return false; // Failed to fetch travel duration
+        }
+        
+        // Step 3: Compare travel duration with estimated time with a tolerance of +-600 seconds (10 minutes)
+        const toleranceInSeconds = 600; // 10 minutes tolerance
+        const difference = Math.abs(travelDuration - estimatedTimeInSeconds);
+        if (difference <= toleranceInSeconds) {
+            return true; // Within tolerance
+        } else {
+            return false; // Outside tolerance
+        }
+    } catch (error) {
+        console.error('Error in DAO_VERIFY:', error);
+        return false;
+    }
+}
+
+
