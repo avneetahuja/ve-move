@@ -15,7 +15,7 @@ export const InfoCard = () => {
     <Card w={"full"} bg={"#000"}>
       <Box p={3}>
         <VStack w={"full"} spacing={{ base: 2, md: 4 }}>
-          <Image src="/ecology-bag-with-leaves.png" borderRadius={16} />
+          <Image src="/cover.jpg" borderRadius={16} />
           <Flex
             w={"full"}
             justifyContent={"space-between"}

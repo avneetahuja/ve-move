@@ -4,8 +4,6 @@ import {
   Text,
   Select,
   VStack,
-  HStack,
-  useEventListenerMap,
 } from "@chakra-ui/react";
 import { useWallet } from "@vechain/dapp-kit-react";
 import { useMutation, useQuery } from "convex/react";
@@ -20,6 +18,7 @@ export function StartForm() {
   const [error, setError] = useState(false);
   const [errorMessages, setErrorMessages] = useState("Error starting journey");
   const account = useWallet();
+  const [rideEnd, setRideEnd] = useState(true);
   let ridingStatus =
     useQuery(api.transactions.getRidingFromWalletAddress, {
       walletAddress: account.account ?? "",
@@ -53,6 +52,7 @@ export function StartForm() {
           console.error("Error obtaining geolocation", error);
         }
       );
+      setRideEnd(true);
     } else {
       setError(true);
       setErrorMessages("Geolocation is not supported by this browser.");
@@ -64,10 +64,14 @@ export function StartForm() {
     if (!account.account) {
       ridingStatus = false;
     }
+    if (account.account && errorMessages==="Please connect your wallet") {
+      setError(false);
+      setErrorMessages("Error starting journey");
+    }
   }, [account.account]);
 
-  if (ridingStatus === true) {
-    return <Status walletAddress={account.account ?? ""} />;
+  if (ridingStatus === true && rideEnd === true) {
+    return <Status walletAddress={account.account ?? ""} setRideEnd={setRideEnd}/>;
   } else {
     return (
       <Box

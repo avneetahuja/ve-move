@@ -9,15 +9,15 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useWallet } from "@vechain/dapp-kit-react";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 
-export function Status({ walletAddress }: { walletAddress: string }) {
+export function Status({ walletAddress, setRideEnd }: { walletAddress: string; setRideEnd: (value: boolean) => void }) {
   const [error, setError] = useState(false);
   const [errorMessages, setErrorMessages] = useState("Error starting journey");
   const [seconds, setSeconds] = useState(0);
   //   const account = useWallet();
-
+    const deleteWallet = useMutation(api.transactions.deleteWalletByAddress);
   const coordinates = useQuery(
     api.transactions.getCoordinatesFromWalletAddress,
     {
@@ -47,18 +47,43 @@ export function Status({ walletAddress }: { walletAddress: string }) {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log(
-            "current position",
-            position.coords.latitude,
-            position.coords.longitude
-          );
-          console.log("start position", coordinates![0], coordinates![1]);
+            console.log("Start Time: ", coordinates![2]);
+          const data = {
+            userAddress: walletAddress, // replace with actual wallet address
+            sLatitude: coordinates![0],
+            sLongitude: coordinates![1],
+            eLatitude: position.coords.latitude.toString(),
+            eLongitude: position.coords.longitude.toString(),
+            sTime: coordinates![2],
+            eTime: Date.now().toString(),
+            modeOfTransport: 'ride', // replace with actual type
+            rewardQty: '1' // replace with actual reward
+          };
+          const apiUrl = 'http://localhost:3001';
+          fetch(`${apiUrl}/transaction`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          })
+          .then(response => response.json())
+          .then(data => console.log(data))
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+            setRideEnd(false);
+            deleteWallet({
+              walletAddress: walletAddress,
+            });
+            
         },
         (error) => {
           setError(true);
           setErrorMessages("Error obtaining geolocation");
           console.error("Error obtaining geolocation", error);
         }
+        
       );
     } else {
       setError(true);

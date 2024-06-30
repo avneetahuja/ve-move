@@ -4,11 +4,16 @@
   "scripts": {
     "test": "npx hardhat test --network hardhat ",
     "test:solo": "npx hardhat test --network vechain_solo",
-    "compile": "npx hardhat compile",
+    "compile": "npx hardhat compile --network vechain_solo",
     "deploy:token:solo": "npx hardhat run scripts/deployToken.ts --network vechain_solo",
     "deploy:ecoearn:solo": "npx hardhat run scripts/deployEcoEarn.ts --network vechain_solo",
     "deploy:token:testnet": "npx hardhat run scripts/deployToken.ts --network vechain_testnet",
+
+
     "deploy:ecoearn:testnet": "npx hardhat run scripts/deployEcoEarn.ts --network vechain_testnet",
+    "deploy:MoveEarn:testnet": "npx hardhat run scripts/deployMoveEarn.ts --network vechain_testnet",
+
+    
     "deploy:solo": "yarn solo-up && yarn deploy:token:solo && yarn deploy:ecoearn:solo",
     "deploy:testnet": "yarn deploy:token:testnet && yarn deploy:ecoearn:testnet",
     "solo-up": "make solo-up"

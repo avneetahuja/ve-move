@@ -91,7 +91,22 @@ export const getCoordinatesFromWalletAddress = query({
       .filter((q) => q.eq(q.field("walletAddress"), args.walletAddress))
       .collect();
     if (transactions.length > 0) {
-      return [transactions[0].latitude, transactions[0].longitude];
+      return [transactions[0].latitude, transactions[0].longitude, transactions[0].time];
+    }
+  },
+});
+
+export const deleteWalletByAddress = mutation({
+  args: {
+    walletAddress: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const transactions = await ctx.db
+      .query("transactions")
+      .filter((q) => q.eq(q.field("walletAddress"), args.walletAddress))
+      .collect();
+    if (transactions.length > 0) {
+      return await ctx.db.delete(transactions[0]._id);
     }
   },
 });
